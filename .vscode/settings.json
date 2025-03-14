@@ -1,5 +1,13 @@
 {
     "C_Cpp.default.compilerPath": "nvcc",
+    "remote.extensionKind": {
+        "GitHub.copilot": [
+            "ui"
+        ],
+        "GitHub.copilot-chat": [
+            "ui"
+        ]
+    },
     "files.associations": {
         "iosfwd": "cpp",
         "array": "cpp",
