@@ -3,6 +3,7 @@
 #include <random>
 #include <sstream>
 #include <chrono>
+#include "utils.hpp"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
@@ -49,76 +50,15 @@ void vecAdd(float* A, float* B, float* C, int n) {
     std::cout << "Vec add (GPU) took " << duration_cast<microseconds>(mem_copy_to_host_end - start).count() << " microseconds" << std::endl;
 }
 
-constexpr int N = 1000000;
-
-void generateRandomInput() {
-    std::ofstream file("in.txt");
-    if (!file) {
-        std::cerr << "Error: Cannot open file for writing!" << std::endl;
-        return;
-    }
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Mersenne Twister PRNG
-    std::uniform_real_distribution<float> dist(1, 1000);
-    for (size_t i = 0; i < N; i++) {
-        file << dist(gen) << " ";
-    }
-    file << "\n";
-    for (size_t i = 0; i < N; i++) {
-        file << dist(gen) << " ";
-    }
-    file.close();
-}
-
-void readInput(std::vector<float>& A, std::vector<float>& B) {
-    std::ifstream file("in.txt");
-    if (!file) {
-        std::cerr << "Error: Cannot open file for reading!" << std::endl;
-        return;
-    }
-    std::string line;
-    float num;
-    if (std::getline(file, line)) {
-        std::istringstream iss(line);
-        while (iss >> num) {
-            A.push_back(num);
-        }
-    }
-    if (std::getline(file, line)) {
-        std::istringstream iss(line);
-        while (iss >> num) {
-            B.push_back(num);
-        }
-    }
-    file.close();
-}
-
 int main() {
-    generateRandomInput();
-
     std::vector<float> A, B;
-    readInput(A, B);
+    readInput("in.txt", A);
+    readInput("in.txt", B);
     
     std::vector<float> C(A.size());
-    vecAdd(A.data(), B.data(), C.data(), N);
+    vecAdd(A.data(), B.data(), C.data(), A.size());
+    printVectors(A, B, C);
 
-    std::cout << "Vectors added. The first 10 values:\n";
-    std::cout << "A: ";
-    for (size_t i = 0; i < 10; i++) {
-        std::cout << A[i] << " ";
-    }
-    std::cout << "\n";
-    std::cout << "B: ";
-    for (size_t i = 0; i < 10; i++) {
-        std::cout << B[i] << " ";
-    }
-    std::cout << "\n";
-    std::cout << "C: ";
-    for (size_t i = 0; i < 10; i++) {
-        std::cout << C[i] << " ";
-    }
-    std::cout << "\n\n";
-
-    vecAddCPU(A.data(), B.data(), C.data(), N);
+    vecAddCPU(A.data(), B.data(), C.data(), A.size());
     std::cout << "\n";
 }
